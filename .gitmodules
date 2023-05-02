@@ -1,0 +1,3 @@
+[submodule "ariths-gen"]
+	path = ariths-gen
+	url = git@github.com:ehw-fit/ariths-gen.git
