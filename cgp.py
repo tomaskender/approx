@@ -21,12 +21,16 @@ class CGP():
         va = np.arange(2**N)
         vb = va.reshape(-1, 1)
         r = mul(va, vb)
+        baseline_r = (va * vb)
+        rel_normalizer = np.clip(baseline_r, 0.01, None)
 
-        cax = plt.imshow(np.abs(r - (va * vb)))
+        cax = plt.imshow(np.abs(r - baseline_r))
         plt.colorbar(cax)
         plt.title("Absolute difference")
         plt.xlabel("a")
         plt.ylabel("b")
         # plt.show()
 
-        print("Mean average error", np.abs(r - (va * vb)).mean())
+        print("Mean average error", np.abs(r - baseline_r).mean())
+        print("Max error", np.abs(r - baseline_r).max())
+        print("Relative error", np.abs((r - baseline_r)/rel_normalizer).sum())
