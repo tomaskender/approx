@@ -2,9 +2,11 @@ import sys
 sys.path.append('./ariths-gen/')
 
 from ariths_gen.wire_components.buses import Bus
-from ariths_gen.multi_bit_circuits.approximate_multipliers import UnsignedBrokenArrayMultiplier
+from ariths_gen.core.cgp_circuit import UnsignedCGPCircuit
 import numpy as np
 import matplotlib.pyplot as plt
+
+N = 8
 
 class CGP():
     def __init__(self, code, error) -> None:
@@ -12,21 +14,19 @@ class CGP():
         self.error = error
 
     def run(self):
-        a = Bus(N=8, prefix="a_bus")
-        b = Bus(N=8, prefix="b_bus")
-
-        # Create BAM 
-        bam = UnsignedBrokenArrayMultiplier(a, b, horizontal_cut=4, vertical_cut=4)
+        # Create MUL 
+        mul = UnsignedCGPCircuit(self.code, [N,N])
 
         # Evaluate all using b'casting
-        va = np.arange(256).reshape(1, -1)
+        va = np.arange(2**N)
         vb = va.reshape(-1, 1)
-        r = bam(va, vb)
+        r = mul(va, vb)
 
         cax = plt.imshow(np.abs(r - (va * vb)))
         plt.colorbar(cax)
         plt.title("Absolute difference")
         plt.xlabel("a")
         plt.ylabel("b")
+        # plt.show()
 
         print("Mean average error", np.abs(r - (va * vb)).mean())

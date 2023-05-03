@@ -11,5 +11,5 @@ git submodule update
 
 Launch solver for `mul8.cgp` output with max allowed error `2%`.
 ```
-python3 main.py mul8.cgp --error 2
+python3 main.py ariths-gen/generated_circuits/cgp_circuits/flat/u_arrmul8.cgp --error 2
 ```
