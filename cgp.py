@@ -80,13 +80,12 @@ class CGP():
             for i in range(len(mutated)):
                 m = mutated[i]
                 pref, trip, out = CGP.parse_code(m)
-                for _ in range(MUTATIONS):
-                    # Pick gate and its input to modify
-                    gate = Random().randint(0, ROWS*COLS-1)
-                    sel = Random().randint(1, 2)
+                r = Random()
+                for _ in range(r.randint(0, MUTATIONS)):
+                    # Pick gate
+                    gate = r.randint(0, ROWS*COLS-1)
                     # Mutate gate
-                    round_down_to_prev_col = 17+(gate/ROWS)*ROWS # get number of gates that are in columns up to current column
-                    trip[gate][sel] = Random().randint(0, round_down_to_prev_col) # inputs can be taken
+                    trip[gate][3] = r.randint(8, 9) # 8 is constant 1, 9 is constant 0
                 triplets = "".join([("([" + str(t[0]) + "]" + ",".join(map(str,t[1:])) + ")") for t in trip])
                 out = ",".join(map(str,out))
                 m = f"{{{pref}}}{triplets}({out})"
