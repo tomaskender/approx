@@ -34,6 +34,7 @@ class CGP():
             print("Starting generation", g+1)
             # Find best individual
             best_fit = math.inf
+            best_error = math.inf
             best_indiv = None
 
             # Find best fitness
@@ -66,6 +67,7 @@ class CGP():
 
                 if fit is not None and fit < best_fit:
                     best_fit = fit
+                    best_error = e
                     best_indiv = indiv
 
             if best_indiv is not None:
@@ -93,7 +95,7 @@ class CGP():
 
             # Create next generation
             population = np.append(preserved, mutated)
-        print("Best code is\n", preserved)
+        print("Best code is\n", preserved, "\nwith error", best_error)
 
     @staticmethod
     def parse_code(code):
