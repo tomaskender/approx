@@ -1,7 +1,6 @@
 import sys
 sys.path.append('./ariths-gen/')
 
-from ariths_gen.wire_components.buses import Bus
 from ariths_gen.core.cgp_circuit import UnsignedCGPCircuit
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,7 +38,8 @@ class CGP():
 
             # Find best fitness
             for indiv in range(POPULATION_SIZE):
-                mul = UnsignedCGPCircuit(population[indiv], [BITS_IN,BITS_IN])
+                code = population[indiv]
+                mul = UnsignedCGPCircuit(code, [BITS_IN,BITS_IN])
                 va = np.arange(2**BITS_IN)
                 vb = va.reshape(-1, 1)
                 r = mul(va, vb)
@@ -61,9 +61,8 @@ class CGP():
                 e = e_mean
                 fit = None
                 if e < self.error:
-                    length = len(mul.get_circuit_gates())
-                    # TODO use depth for fitness
-                    fit = length ** 2
+                    # TODO incorporate depth into fitness
+                    fit = len(mul.get_circuit_gates())
 
                 if fit is not None and fit < best_fit:
                     best_fit = fit
@@ -82,20 +81,12 @@ class CGP():
                 m = mutated[i]
                 pref, trip, out = CGP.parse_code(m)
                 for _ in range(MUTATIONS):
-                    gate = Random().randint(0, ROWS*COLS+16-1)
-                    if gate < ROWS*COLS:
-                        # Mutate gates
-                        sel = Random().randint(1, 3)
-                        if sel < 3:
-                            # Mutate gate inputs
-                            round_down_to_prev_col = 18+(gate/ROWS)*ROWS # get number of gates that are in columns up to current column
-                            trip[gate][sel] = Random().randint(0, round_down_to_prev_col-1) # inputs can be taken
-                        else:
-                            # Mutate type of gate
-                            trip[gate][sel] = Random().randint(2, 7) # 2-7 are two input logic gates specified in cgp_circuit.py
-                    else:
-                        # Mutate outputs
-                        out[gate-ROWS*COLS] = Random().randint(18, 18+ROWS*COLS-1) # output can be taken from any gate in any column
+                    # Pick gate and its input to modify
+                    gate = Random().randint(0, ROWS*COLS-1)
+                    sel = Random().randint(1, 2)
+                    # Mutate gate
+                    round_down_to_prev_col = 17+(gate/ROWS)*ROWS # get number of gates that are in columns up to current column
+                    trip[gate][sel] = Random().randint(0, round_down_to_prev_col) # inputs can be taken
                 triplets = "".join([("([" + str(t[0]) + "]" + ",".join(map(str,t[1:])) + ")") for t in trip])
                 out = ",".join(map(str,out))
                 m = f"{{{pref}}}{triplets}({out})"
