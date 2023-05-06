@@ -14,9 +14,9 @@ COLS=40
 BITS_IN = 8
 
 # CGP setup
-POPULATION_SIZE = 100
-MUTATIONS = 3
-GENERATIONS = 500
+POPULATION_SIZE = 300
+MUTATIONS = 5
+GENERATIONS = 30
 
 CODE_RE = re.compile(r"^{(.*)}(.*)\(([^()]+)\)$")
 TRIPLETS_RE = re.compile(r"\(\[(\d+)\](\d+),(\d+),(\d+)\)")
@@ -71,10 +71,10 @@ class CGP():
             if best_indiv is not None:
                 print("Best fitness is", best_fit)
                 preserved = np.array([population[best_indiv]])
-                mutated = np.delete(population, best_indiv)
+                mutated = np.repeat(self.code, POPULATION_SIZE-1)
             else:
-                preserved = []
-                mutated = population
+                preserved = np.array([])
+                mutated = np.repeat(self.code, POPULATION_SIZE)
 
             # Perform mutations
             for i in range(len(mutated)):
@@ -93,6 +93,7 @@ class CGP():
 
             # Create next generation
             population = np.append(preserved, mutated)
+        print("Best code is\n", preserved)
 
     @staticmethod
     def parse_code(code):
