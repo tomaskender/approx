@@ -9,12 +9,10 @@ import re
 from random import Random
 
 # Circuit setup based on input data
-ROWS=8
-COLS=40
 BITS_IN = 8
 
 # CGP setup
-POPULATION_SIZE = 500
+POPULATION_SIZE = 300
 MUTATIONS_BASE = 3
 MUTATIONS_BONUS = 2
 IMPROVEMENT_WATCHDOG = 4
@@ -25,6 +23,7 @@ OUT_RE = re.compile(r"\d+")
 class CGP():
     def __init__(self, code: str, error: float) -> None:
         self.code = code
+        self.gates_count = len(UnsignedCGPCircuit(code, [BITS_IN,BITS_IN]).get_circuit_gates())
         self.error = error
 
     def run(self):
@@ -48,26 +47,25 @@ class CGP():
                 vb = va.reshape(-1, 1)
                 r = mul(va, vb)
                 baseline_r = (va * vb)
-                #rel_normalizer = np.clip(baseline_r, 0.01, None)
 
                 e_mean =  np.abs(r - baseline_r).mean() / (2 ** (2*BITS_IN))
-                #e_max = np.abs(r - baseline_r).max()
-                #e_rel = np.abs((r - baseline_r)/rel_normalizer).sum()
-
-                # Use mean error for fitness normalized by number of calculations
-                e = e_mean
                 fit = None
-                if e < self.error:
+                if e_mean < self.error:
                     # TODO incorporate depth into fitness
                     fit = len(mul.get_circuit_gates())
 
                 if fit is not None and fit < best_fit:
                     best_fit = fit
-                    best_error = e
+                    best_error = e_mean
+
+                    rel_normalizer = np.clip(baseline_r, 0.0001, None)
+                    best_error_max = np.abs(r - baseline_r).max()
+                    best_error_rel = np.abs((r - baseline_r)/rel_normalizer).mean() / (2 ** (2*BITS_IN))
                     best_indiv = indiv
 
             if best_indiv is not None:
-                print("Best fitness is", best_fit)
+                print("Current gate count is", best_fit)
+                print("Errors: [mean] {:.3f}, [max] {:d}, [rel mean] {:.4f}".format(best_error, best_error_max, best_error_rel))
                 preserved = np.array([population[best_indiv]])
                 mutated = np.repeat(self.code, POPULATION_SIZE-1)
             else:
@@ -82,7 +80,11 @@ class CGP():
                 if gens_since_improvement >= IMPROVEMENT_WATCHDOG:
                     # best solution has already converged
                     # break off generation of future generations
-                    break
+                    print("Best found code is:")
+                    print(preserved)
+                    print("with mean error {:.2f}% and fitness {}.".format(100*best_error, best_fit))
+                    print("Circuit has been reduced to {:.2f}% of original circuit.".format(100*best_fit/self.gates_count))
+                    exit(0)
             prev_fit = best_fit
 
             # Perform mutations
@@ -93,7 +95,7 @@ class CGP():
                 mut_cnt = int(MUTATIONS_BASE + g * MUTATIONS_BONUS)
                 for _ in range(r.randint(int(mut_cnt/2), mut_cnt)):
                     # Pick gate
-                    gate = r.randint(0, ROWS*COLS-1)
+                    gate = r.randint(0, self.gates_count-1)
                     # Mutate gate
                     trip[gate][3] = r.randint(8, 9) # 8 is constant 1, 9 is constant 0
                 triplets = "".join([("([" + str(t[0]) + "]" + ",".join(map(str,t[1:])) + ")") for t in trip])
@@ -103,7 +105,6 @@ class CGP():
 
             # Create next generation
             population = np.append(preserved, mutated)
-        print("Best found code is:\n{}\nwith error {:.2f} and fitness {}" % (preserved, best_error, best_fit))
 
     @staticmethod
     def parse_code(code):
