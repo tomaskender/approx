@@ -5,6 +5,9 @@ Below you can find visualizations of these experiments.
 ## Circuit size vs error
 ![Size vs. generations](experiments/plot_size_vs_error.png)
 
+## Generations until convergence vs error
+![Size vs. generations](experiments/plot_gens_vs_error.png)
+
 ## Circuit size vs number of generations it took
 ![Size vs. generations](experiments/plot_size_vs_generations.png)
 
