@@ -30,6 +30,7 @@ class CGP():
         # Initialize population
         population = np.repeat(self.code, POPULATION_SIZE).astype(dtype="<U8000")
         
+        normalizer = 2 ** (2*BITS_IN)
         gens_since_improvement = 0
         prev_fit = math.inf
         for g in itertools.count(start=0, step=1):
@@ -48,7 +49,7 @@ class CGP():
                 r = mul(va, vb)
                 baseline_r = (va * vb)
 
-                e_mean =  np.abs(r - baseline_r).mean() / (2 ** (2*BITS_IN))
+                e_mean =  np.abs(r - baseline_r).mean() / normalizer
                 fit = None
                 if e_mean < self.error:
                     # TODO incorporate depth into fitness
@@ -58,14 +59,14 @@ class CGP():
                     best_fit = fit
                     best_error = e_mean
 
-                    rel_normalizer = np.clip(baseline_r, 0.0001, None)
+                    rel_normalizer = np.clip(baseline_r, 1, None)
                     best_error_max = np.abs(r - baseline_r).max()
-                    best_error_rel = np.abs((r - baseline_r)/rel_normalizer).mean() / (2 ** (2*BITS_IN))
+                    best_error_rel = np.abs((r - baseline_r)/rel_normalizer).mean()
                     best_indiv = indiv
 
             if best_indiv is not None:
                 print("Current gate count is", best_fit)
-                print("Errors: [mean] {:.3f}, [max] {:d}, [rel mean] {:.4f}".format(best_error, best_error_max, best_error_rel))
+                print("Errors: [mean] {:.3f}, [max] {:d}, [rel mean] {:.3f}".format(best_error, best_error_max, best_error_rel))
                 preserved = np.array([population[best_indiv]])
                 mutated = np.repeat(self.code, POPULATION_SIZE-1)
             else:
@@ -82,8 +83,8 @@ class CGP():
                     # break off generation of future generations
                     print("Best found code is:")
                     print(preserved)
-                    print("with mean error {:.2f}% and fitness {}.".format(100*best_error, best_fit))
-                    print("Circuit has been reduced to {:.2f}% of original circuit.".format(100*best_fit/self.gates_count))
+                    print("with mean error {:.3f}% and fitness {}.".format(100*best_error, best_fit))
+                    print("Circuit has been reduced to {:.1f}% of original circuit.".format(100*best_fit/self.gates_count))
                     exit(0)
             prev_fit = best_fit
 
