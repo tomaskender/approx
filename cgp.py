@@ -46,23 +46,16 @@ class CGP():
                 vb = va.reshape(-1, 1)
                 r = mul(va, vb)
                 baseline_r = (va * vb)
-                rel_normalizer = np.clip(baseline_r, 0.01, None)
+                #rel_normalizer = np.clip(baseline_r, 0.01, None)
 
-                # cax = plt.imshow(np.abs(r - baseline_r))
-                # plt.colorbar(cax)
-                # plt.title("Absolute difference")
-                # plt.xlabel("a")
-                # plt.ylabel("b")
-                # plt.show()
-
-                e_mean =  np.abs(r - baseline_r).mean()
-                e_max = np.abs(r - baseline_r).max()
-                e_rel = np.abs((r - baseline_r)/rel_normalizer).sum()
+                e_mean =  np.abs(r - baseline_r).mean() / (2 ** (2*BITS_IN))
+                #e_max = np.abs(r - baseline_r).max()
+                #e_rel = np.abs((r - baseline_r)/rel_normalizer).sum()
 
                 # Use mean error for fitness
                 e = e_mean
                 fit = None
-                if e < self.error * (2 ** (2*BITS_IN)):
+                if e < self.error:
                     # TODO incorporate depth into fitness
                     fit = len(mul.get_circuit_gates())
 
@@ -97,7 +90,7 @@ class CGP():
 
             # Create next generation
             population = np.append(preserved, mutated)
-        print("Best code is\n", preserved, "\nwith error", best_error)
+        print(f"Best found code is:\n{preserved}\nwith error {best_error}%")
 
     @staticmethod
     def parse_code(code):
