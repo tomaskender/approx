@@ -73,3 +73,14 @@ plt.show()
 #     ax.plot(generations[i], size[i], marker="o", color=colors[i], label=labels[i])
 # ax.legend()
 # plt.show()
+
+# fig, ax = plt.subplots(figsize=(10, 4))
+# size = [93.8, 92.5, 87.2, 79.1, 55.0, 36.88]
+# labels = ["0.1%", "0.2%", "1%", "2%", "10%", "20%"]
+# colors = ["red", "blue", "green", "orange", "purple", "cyan"]
+# ax.set_ylabel("% of original circuit")
+# ax.set_xlabel("Mean error allowed")
+# for i in range(len(labels)):
+#     ax.plot(labels[i], size[i], marker="o", color=colors[i])
+# ax.legend()
+# plt.show()
