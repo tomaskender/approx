@@ -5,16 +5,6 @@ import matplotlib.pyplot as plt
 colors = ["red", "blue", "green", "orange", "purple", "cyan"]
 labels = ["0.1%", "0.2%", "1%", "2%", "10%", "20%"]
 
-fig, ax = plt.subplots(figsize=(10, 4))
-sizes = [93.8, 92.5, 87.2, 79.1, 55.0, 36.88]
-generations = [10, 12, 12, 19, 31, 47]
-ax.set_ylabel("% of original size")
-ax.set_xlabel("Generations until convergence")
-for i in range(len(labels)):
-    ax.plot(generations[i], sizes[i], marker="o", color=colors[i], label=labels[i])
-ax.legend()
-plt.show()
-
 fig, ax = plt.subplots(figsize=(10, 6))
 s01 = [93.8, 94.4, 95.9, 95.0, 94.7]
 s02 = [92.5, 94.4, 93.4, 90.9, 92.8]
@@ -49,5 +39,13 @@ boxprops = dict(linewidth=2, color='black')
 bp = ax.boxplot(generations, labels=labels, boxprops=boxprops, patch_artist=True)
 for patch, color in zip(bp['boxes'], colors):
     patch.set_facecolor(color)
+ax.legend()
+plt.show()
+
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.set_ylabel("% of original size")
+ax.set_xlabel("Generations until convergence")
+for i in range(len(labels)):
+    ax.scatter(generations[i], sizes[i], marker="o", color=colors[i], label=labels[i])
 ax.legend()
 plt.show()
