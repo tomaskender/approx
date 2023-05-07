@@ -2,9 +2,9 @@ import sys
 sys.path.append('./ariths-gen/')
 
 from ariths_gen.core.cgp_circuit import UnsignedCGPCircuit
-import numpy as np
-import matplotlib.pyplot as plt
+import itertools
 import math
+import numpy as np
 import re
 from random import Random
 
@@ -17,7 +17,7 @@ BITS_IN = 8
 POPULATION_SIZE = 500
 MUTATIONS_BASE = 3
 MUTATIONS_BONUS = 2
-GENERATIONS = 20
+IMPROVEMENT_WATCHDOG = 4
 
 CODE_RE = re.compile(r"^{(.*)}(.*)\(([^()]+)\)$")
 TRIPLETS_RE = re.compile(r"\(\[(\d+)\](\d+),(\d+),(\d+)\)")
@@ -31,7 +31,9 @@ class CGP():
         # Initialize population
         population = np.repeat(self.code, POPULATION_SIZE).astype(dtype="<U8000")
         
-        for g in range(GENERATIONS):
+        gens_since_improvement = 0
+        prev_fit = math.inf
+        for g in itertools.count(start=0, step=1):
             print("Starting generation", g+1)
             # Find best individual
             best_fit = math.inf
@@ -52,7 +54,7 @@ class CGP():
                 #e_max = np.abs(r - baseline_r).max()
                 #e_rel = np.abs((r - baseline_r)/rel_normalizer).sum()
 
-                # Use mean error for fitness
+                # Use mean error for fitness normalized by number of calculations
                 e = e_mean
                 fit = None
                 if e < self.error:
@@ -71,6 +73,17 @@ class CGP():
             else:
                 preserved = np.array([])
                 mutated = np.repeat(self.code, POPULATION_SIZE)
+
+            # Watchdog that kills generation once best solution converges
+            if best_fit < prev_fit:
+                gens_since_improvement = 0
+            else:
+                gens_since_improvement += 1
+                if gens_since_improvement >= IMPROVEMENT_WATCHDOG:
+                    # best solution has already converged
+                    # break off generation of future generations
+                    break
+            prev_fit = best_fit
 
             # Perform mutations
             for i in range(len(mutated)):
