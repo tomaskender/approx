@@ -4,22 +4,22 @@ Below you can find visualizations of these experiments.
 
 ## Experiments with different errors
 ### 0%
-TODO
+![0% experiment](experiments/plot_0percent.png)
 
 ### 0.1%
-TODO
+![0.1% experiment](experiments/plot_01percent.png)
 
 ### 0.2%
-TODO
+![0.2% experiment](experiments/plot_02percent.png)
 
 ### 1%
-TODO
+![1% experiment](experiments/plot_1percent.png)
 
 ### 2%
-TODO
+![2% experiment](experiments/plot_2percent.png)
 
 ### 10%
-TODO
+![10% experiment](experiments/plot_10percent.png)
 
 ### 20%
-TODO
+![20% experiment](experiments/plot_20percent.png)
