@@ -51,7 +51,7 @@ class CGP():
 
                 e_mean =  np.abs(r - baseline_r).mean() / normalizer
                 fit = None
-                if e_mean < self.error:
+                if e_mean <= self.error:
                     # TODO incorporate depth into fitness
                     fit = len(mul.get_circuit_gates())
 
