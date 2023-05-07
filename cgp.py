@@ -15,14 +15,15 @@ BITS_IN = 8
 
 # CGP setup
 POPULATION_SIZE = 300
-MUTATIONS = 5
+MUTATIONS_BASE = 3
+MUTATIONS_BONUS = 0.3
 GENERATIONS = 30
 
 CODE_RE = re.compile(r"^{(.*)}(.*)\(([^()]+)\)$")
 TRIPLETS_RE = re.compile(r"\(\[(\d+)\](\d+),(\d+),(\d+)\)")
 OUT_RE = re.compile(r"\d+")
 class CGP():
-    def __init__(self, code, error) -> None:
+    def __init__(self, code: str, error: float) -> None:
         self.code = code
         self.error = error
 
@@ -61,7 +62,7 @@ class CGP():
                 # Use mean error for fitness
                 e = e_mean
                 fit = None
-                if e < self.error:
+                if e < self.error * (2 ** (2*BITS_IN)):
                     # TODO incorporate depth into fitness
                     fit = len(mul.get_circuit_gates())
 
@@ -83,7 +84,7 @@ class CGP():
                 m = mutated[i]
                 pref, trip, out = CGP.parse_code(m)
                 r = Random()
-                for _ in range(r.randint(0, MUTATIONS)):
+                for _ in range(r.randint(0, int(MUTATIONS_BASE + g * MUTATIONS_BONUS))):
                     # Pick gate
                     gate = r.randint(0, ROWS*COLS-1)
                     # Mutate gate

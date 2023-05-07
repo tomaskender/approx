@@ -7,11 +7,11 @@ def main():
     parser.add_argument('cgpfile', type=str,
                         help='CGP file containing input chromosome')
     parser.add_argument('--error', type=float, required=True,
-                        help='sum the integers (default: find the max)')
+                        help='allowed error in %')
 
     args = parser.parse_args()
     with open(args.cgpfile, "r") as f:
-        cgp = CGP(f.read(), args.error)
+        cgp = CGP(f.read(), args.error/100)
         cgp.run()
 
 if __name__ == '__main__':
