@@ -61,3 +61,15 @@ axs[3].set_ylabel("Relative mean error")
 
 fig.tight_layout()
 plt.show()
+
+# fig, ax = plt.subplots(figsize=(10, 4))
+# size = [93.8, 92.5, 87.2, 79.1, 55.0, 36.88]
+# generations = [10, 12, 12, 19, 31, 47]
+# colors = ["red", "blue", "green", "orange", "purple", "cyan"]
+# labels = ["0.1%", "0.2%", "1%", "2%", "10%", "20%"]
+# ax.set_ylabel("% of original size")
+# ax.set_xlabel("Generations until convergence")
+# for i in range(len(labels)):
+#     ax.plot(generations[i], size[i], marker="o", color=colors[i], label=labels[i])
+# ax.legend()
+# plt.show()
