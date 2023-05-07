@@ -14,10 +14,10 @@ COLS=40
 BITS_IN = 8
 
 # CGP setup
-POPULATION_SIZE = 300
+POPULATION_SIZE = 500
 MUTATIONS_BASE = 3
-MUTATIONS_BONUS = 0.3
-GENERATIONS = 30
+MUTATIONS_BONUS = 1
+GENERATIONS = 20
 
 CODE_RE = re.compile(r"^{(.*)}(.*)\(([^()]+)\)$")
 TRIPLETS_RE = re.compile(r"\(\[(\d+)\](\d+),(\d+),(\d+)\)")
@@ -84,7 +84,8 @@ class CGP():
                 m = mutated[i]
                 pref, trip, out = CGP.parse_code(m)
                 r = Random()
-                for _ in range(r.randint(0, int(MUTATIONS_BASE + g * MUTATIONS_BONUS))):
+                mut_cnt = int(MUTATIONS_BASE + g * MUTATIONS_BONUS)
+                for _ in range(r.randint(int(mut_cnt/2), mut_cnt)):
                     # Pick gate
                     gate = r.randint(0, ROWS*COLS-1)
                     # Mutate gate
