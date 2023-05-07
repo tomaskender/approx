@@ -16,7 +16,7 @@ BITS_IN = 8
 # CGP setup
 POPULATION_SIZE = 500
 MUTATIONS_BASE = 3
-MUTATIONS_BONUS = 1
+MUTATIONS_BONUS = 2
 GENERATIONS = 20
 
 CODE_RE = re.compile(r"^{(.*)}(.*)\(([^()]+)\)$")
@@ -90,7 +90,7 @@ class CGP():
 
             # Create next generation
             population = np.append(preserved, mutated)
-        print(f"Best found code is:\n{preserved}\nwith error {best_error}%")
+        print("Best found code is:\n{}\nwith error {:.2f} and fitness {}" % (preserved, best_error, best_fit))
 
     @staticmethod
     def parse_code(code):
